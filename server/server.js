@@ -61,11 +61,15 @@ io.on('connection', (socket) => {
         } 
 
         // If room is full, get admin of the room (first player socket id) and enable button
-        if (users.getUserList(room).length === 3) {
+        if (users.getUserList(room).length === 2) {
             admin = users.getAdminId(room);
             console.log(admin);
             socket.to(admin).emit('showStartGameButton');
         }
+    });
+
+    socket.on('startGame', () => {
+       new NevskyGame(users.getUserList(room));
     });
 
     socket.on('listServers', function(servers) {

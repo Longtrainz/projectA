@@ -3,13 +3,17 @@ class NevskyGame {
         this._players = players;
         this._turns = [null, null];
 
-        this._sendToPlayers('Rock Paper Scissors Starts!');
-
-        this._players.forEach((player, playerIndex) => {
-            player.on('turn', (turn) => {
-                this._onTurn(playerIndex, turn);
-            });
+    this._players.forEach((player) => {
+            console.log('Player: ' + player);
         });
+
+        // this._sendToPlayers('Rock Paper Scissors Starts!');
+
+        // this._players.forEach((player, playerIndex) => {
+        //     player.on('turn', (turn) => {
+        //         this._onTurn(playerIndex, turn);
+        //     });
+        // });
     }
 }
 

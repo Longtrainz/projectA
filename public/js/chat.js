@@ -104,8 +104,13 @@ socket.on('showDisabledStartGameButton', () => {
         locationButton = $('<button/>', {
             text: "Waiting for players to join",
             id: 'send-location',
-            click: function () { alert('hi'); }
+            click: function() {
+                socket.emit('startGame'), 
+                locationButton.attr('hidden', 'hidden');
+            }
+            /* click: function () { alert('hi'); } */
         }); 
+        // locationButton.on('click', function(){socket.emit('startGame')});
         locationButton.attr('disabled', 'disabled');
         $(".chat__footer").append(locationButton);
       });
@@ -114,13 +119,6 @@ socket.on('showDisabledStartGameButton', () => {
 socket.on('showStartGameButton', () => {
     locationButton.removeAttr('disabled').text('Start game');
 });
-
-
-locationButton.on('click', () => {
-    
-});
-
-
 
 
 
