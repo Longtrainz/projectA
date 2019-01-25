@@ -3,9 +3,9 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
-const NevskyGame = require('./nevsky-game');
+const NevskyGame = require('./games/nevsky-game/nevsky-game');
 
-const {generateMessage, generateLocationMessage} = require('./utils/message');
+let {generateMessage, generateLocationMessage} = require('./utils/message');
 const {isRealString} = require('./utils/validation');
 const {Users} = require('./utils/users');
 const publicPath = path.join(__dirname, '../public');
@@ -28,23 +28,24 @@ io.on('connection', (socket) => {
         if (!isRealString(params.name) || !isRealString (params.room)) {
             return callback('Name and room name are required');
         }
-        let usersList = users.getUserList(room);
+        // Get user name
         let username = params.name.toLowerCase().trim();
+        // Get room name
         room = params.room.toLowerCase().trim();
-
-        usersList.forEach(user => {
-          if (user.toLowerCase() === username) {
-              return callback('Name is already in use');
-          }
-      });
+        // Get existing user names
+        let usersList = users.getUserList(room);
+        // Check if user name is already present in user list
+        let usersListToLowerCase = usersList.map((user) => user.toLowerCase().trim());
+        if (usersListToLowerCase.includes(username.replace(/ +/g, ""))) {
+            return callback('Name is already in use');
+        }
 
         socket.join(room);
-        // rooms.push(room);
         users.addRoom(room);
         
         // remove from other rooms
         users.removeUser(socket.id);
-        users.addUser(socket.id, params.name, room);
+        users.addUser(socket, socket.id, params.name, room);
 
         // Update User list
         io.to(room).emit('updateUserList', users.getUserList(room));
@@ -55,12 +56,11 @@ io.on('connection', (socket) => {
         // If user is first in the room, then he becomes admin and button is disabled for him
         if (users.getUserList(room).length === 1) {
             // admin = socket;
-            admin = users.getAdminId(room);
-            console.log(admin);
+            // console.log(admin);
             socket.emit('showDisabledStartGameButton');
         } 
 
-        // If room is full, get admin of the room (first player socket id) and enable button
+        // If room is full, get admin of the room (first player socket id) and enable 'Start Game' button
         if (users.getUserList(room).length === 2) {
             admin = users.getAdminId(room);
             console.log(admin);
@@ -68,8 +68,27 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('game', (msg) => console.log(msg))
+
+   /*
+    Start game listener 
+    */
+    // socket.on('startGame', () => {
+    //     // let user = users.getUser(socket.id);
+    //     let user = users.getUser(socket.id);
+    //     new NevskyGame(user, users);
+    // });
+
     socket.on('startGame', () => {
-       new NevskyGame(users.getUserList(room));
+        // let user = users.getUser(socket.id);
+        let sockets = [];
+        let user = users.getUser(socket.id);
+        let usersInRoom = users.getUserObjects(user.room);
+        usersInRoom.forEach((user) => {
+            sockets.push(user.socket); 
+        });
+
+        new NevskyGame(usersInRoom, sockets);
     });
 
     socket.on('listServers', function(servers) {
@@ -79,12 +98,32 @@ io.on('connection', (socket) => {
         socket.emit('servers', createdRooms);
     });
 
+     socket.on('print', (text) => {
+        console.log(text);
+        socket.emit('newMessage', generateMessage('Admin', text));
+    });
 
+
+
+    /* 
+    Message block
+    */
     socket.on('createMessage', function(message, callback) {
         let user = users.getUser(socket.id);
+        console.log('This is user: ' + user.name);
 
         if (user && isRealString(message.text)) {
             io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+        }
+        callback();
+    });
+
+    socket.on('createIntroMessage', function(message, callback) {
+        let user = users.getUser(socket.id);
+        console.log('This is user: ' + user.name);
+
+        if (user && isRealString(message.text)) {
+            io.to(user.room).emit('newIntroMessage', generateMessage('', message.text));
         }
         callback();
     });
@@ -96,8 +135,23 @@ io.on('connection', (socket) => {
             io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));
         } 
     });
+
+
+    // socket.on('11', function(data){
+    //     console.log(data.playerID);
+    //     console.log(data.otherVariable);
+    //  });
+
+    // socket.on('tesstServersss', function(text) {
+    //     console.log(text);
+    //     socket.emit('newMessage', generateMessage('Admin', text));
+    // });
+
     
 
+    /* 
+        Disconnect block
+    */
     socket.on('disconnect', () => {
         let user = users.removeUser(socket.id);
 

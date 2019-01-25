@@ -69,6 +69,21 @@ socket.on('newMessage', function (message) {
     scrollToBottom();
 });
 
+socket.on('newIntroMessage', function (message) {
+    let messages = document.getElementById('messages');
+    let span = document.createElement('span');
+    span.className = 'intro__message';
+    span.innerHTML = message.text
+    messages.appendChild(span);
+    scrollToBottom();
+});
+
+socket.on('startNewGame', (message) => {
+    socket.emit('createIntroMessage', message, function () {
+        console.log('This is callback')
+    });
+});
+
 
 socket.on('newLocationMessage', function (message) {
     let formattedTime = moment(message.createdAt).format('h:mm a');
@@ -110,18 +125,18 @@ socket.on('showDisabledStartGameButton', () => {
             }
             /* click: function () { alert('hi'); } */
         }); 
-        // locationButton.on('click', function(){socket.emit('startGame')});
         locationButton.attr('disabled', 'disabled');
         $(".chat__footer").append(locationButton);
       });
 });
 
+// locationButton.on('click', function() {
+//     socket.emit('startGame')
+// });
+
 socket.on('showStartGameButton', () => {
     locationButton.removeAttr('disabled').text('Start game');
 });
-
-
-
 
 // socket.on('hideStartGameButton', () => {
 //     locationButton.attr('hidden', 'hidden');

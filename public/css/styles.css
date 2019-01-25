@@ -172,6 +172,10 @@
     color: #999;
   }
 
+  .intro__message {
+    font-weight: bold
+  }
+
   
   @media (max-width: 600px) {
     * {

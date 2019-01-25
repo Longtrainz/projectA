@@ -53,12 +53,25 @@
         </li>
     </script>
 
+    <script id="intro-message-template" type="text/template">
+        <li class="message">
+            <div class="message__title">
+                <h4>{{from}}</h4>
+                <span>{{createdAt}}</span>
+            </div>
+            <div class="message__body">
+                <strong>{{text}}</strong>
+            </div>
+        </li>
+    </script>
+
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/libs/jquery.js"></script>
     <script src="/js/libs/moment.js"></script>
     <script src="/js/libs/mustache.js"></script>
     <script src="/js/libs/deparam.js"></script>
     <script src ="/js/chat.js"></script>
+    <script src ="/js/game.js"></script>
     
 </body>
 </html>
