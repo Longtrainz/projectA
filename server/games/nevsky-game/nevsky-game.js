@@ -1,6 +1,7 @@
 // const {Users} = require('./utils/users');
 // let {generateMessage, generateLocationMessage} = require('../../utils/message');
 const {getRanks} = require('./titles');
+let socket;
 
 class NevskyGame {
     constructor(users, sockets) {
@@ -12,14 +13,16 @@ class NevskyGame {
         console.log('Sockets in room: ' + this._sockets.length)
     
         // Start game
-        let introMessage = `2653 год. Вот уже 300 лет как Александр "ВотТакВот" Невский 
-        стал Императором планеты Земля. За верную и отважную службу в войне против Армии Обзорщика
-        и подавлении многочисленных восстаний, Бессмертный Владыка милостиво жалует храбрым воинам по 3 Титула.
-        Отныне простолюдины обязаны перечислять Ваши звания перед обращением к Вам.
-        Каждый из Титулов наделяет Вас властью и особыми привилегиями.`
+        let introMessage = `2653 год.` + '<br>' +
+        `Вот уже 300 лет как Александр "ВотТакВот" Невский 
+        стал Императором планеты Земля.`+ '<br>' + 
+        `За верную и отважную службу в войне против Армии Обзорщика и подавлении многочисленных восстаний, 
+        Бессмертный Владыка милостиво жалует храбрым воинам по 3 Титула.` + '<br>' +
+        `Отныне простолюдины обязаны перечислять Ваши звания перед обращением к Вам. ` + '<br>' +
+        `Каждый из Титулов наделяет Вас властью и особыми привилегиями.`
 
         // Start message
-        let socket = this._sockets[0];
+        socket = this._sockets[0];
         socket.emit('startNewGame', {text: introMessage});  
 
         this._startGame(this._users);
@@ -35,6 +38,8 @@ class NevskyGame {
         let titles = [];
         users.forEach((user) => {
             titles = this._getRandomTitle();
+            socket.emit('nevskyTitlesGame', {text:`Почетными Титулами награждается ${user.name}:` + '<br>'});
+            socket.emit('nevskyTitlesGame', {text:`Отныне Вы: ${titles[0]}, ${titles[1]}, ${titles[2]}` + '<br>'});
             console.log(`Почетными Титулами награждается ${user.name}:`)
             console.log(`Отныне Вы: ${titles[0]}, ${titles[1]}, ${titles[2]}`);
         });

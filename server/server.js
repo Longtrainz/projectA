@@ -98,12 +98,6 @@ io.on('connection', (socket) => {
         socket.emit('servers', createdRooms);
     });
 
-     socket.on('print', (text) => {
-        console.log(text);
-        socket.emit('newMessage', generateMessage('Admin', text));
-    });
-
-
 
     /* 
     Message block
@@ -120,10 +114,18 @@ io.on('connection', (socket) => {
 
     socket.on('createIntroMessage', function(message, callback) {
         let user = users.getUser(socket.id);
-        console.log('This is user: ' + user.name);
 
         if (user && isRealString(message.text)) {
             io.to(user.room).emit('newIntroMessage', generateMessage('', message.text));
+        }
+        callback();
+    });
+
+    socket.on('createGameMessage', function(message, callback) {
+        let user = users.getUser(socket.id);
+
+        if (user && isRealString(message.text)) {
+            io.to(user.room).emit('newGameMessage', generateMessage('', message.text));
         }
         callback();
     });

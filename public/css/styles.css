@@ -2,7 +2,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    /* font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; */
     font-weight: 300;
     font-size: .95rem;
   }
@@ -124,6 +124,7 @@
     flex-grow: 1;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
+    font-family: 'Lucida Sans Unicode', Verdana, sans-serif;
   }
   
   .chat__footer {
@@ -173,7 +174,17 @@
   }
 
   .intro__message {
-    font-weight: bold
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+    color: gold;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;  
+  }
+  #intro_message {
+    background-color: dodgerblue;
   }
 
   

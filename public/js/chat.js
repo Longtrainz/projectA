@@ -70,11 +70,13 @@ socket.on('newMessage', function (message) {
 });
 
 socket.on('newIntroMessage', function (message) {
+    let introMessage = document.getElementById('intro_message');
     let messages = document.getElementById('messages');
+    messages.innerHTML = '';
     let span = document.createElement('span');
     span.className = 'intro__message';
     span.innerHTML = message.text
-    messages.appendChild(span);
+    introMessage.appendChild(span);
     scrollToBottom();
 });
 
@@ -82,6 +84,22 @@ socket.on('startNewGame', (message) => {
     socket.emit('createIntroMessage', message, function () {
         console.log('This is callback')
     });
+});
+
+
+socket.on('nevskyTitlesGame', (message) => {
+    socket.emit('createGameMessage', message, function () {
+        console.log('This is callback')
+    });
+});
+
+socket.on('newGameMessage', function (message) {
+    let messages = document.getElementById('messages');
+    // messages.innerHTML = '';
+    let span = document.createElement('span');
+    span.innerHTML = message.text
+    messages.appendChild(span);
+    scrollToBottom();
 });
 
 
